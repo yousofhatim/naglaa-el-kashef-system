@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".statuActivity">
+
+    <!-- خلفية غير شفافة -->
+    <View
+        android:background="#C803164E"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- قسم منتظم -->
+    <LinearLayout
+        android:id="@+id/linearLayoutRegular"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayoutIrregular"
+        app:layout_constraintHeight_default="spread">
+
+        <TextView
+            android:id="@+id/regularCountTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="منتظم"
+            android:textColor="#00FFE6"
+            android:textSize="30sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="أقل من 7 أيام"
+            android:textColor="#00FFE6"
+            android:textSize="14sp" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:id="@+id/forTextViewRegular"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+            </LinearLayout>
+
+        </ScrollView>
+    </LinearLayout>
+
+    <!-- قسم غير منتظم -->
+    <LinearLayout
+        android:id="@+id/linearLayoutIrregular"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutRegular"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayoutOutOfSystem"
+        app:layout_constraintHeight_default="spread">
+
+        <TextView
+            android:id="@+id/irregularCountTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="غير منتظم"
+            android:textColor="#02C86B"
+            android:textSize="30sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="بين 7 و 25 يومًا"
+            android:textColor="#02C86B"
+            android:textSize="14sp" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:id="@+id/forTextViewIrregular"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+            </LinearLayout>
+
+        </ScrollView>
+    </LinearLayout>
+
+    <!-- قسم خارج المنظومة -->
+    <LinearLayout
+        android:id="@+id/linearLayoutOutOfSystem"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutIrregular"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_default="spread">
+
+        <TextView
+            android:id="@+id/outOfSystemCountTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="خارج المنظومة"
+            android:textColor="#770000"
+            android:textSize="30sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="أكثر من 25 يومًا"
+            android:textColor="#770000"
+            android:textSize="14sp" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:id="@+id/forTextViewOutOfSystem"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+            </LinearLayout>
+
+        </ScrollView>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+

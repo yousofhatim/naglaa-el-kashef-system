@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- حالة الزر عند الضغط -->
+    <item android:state_pressed="true">
+        <shape>
+            <solid android:color="#FF71FA"/> <!-- تغيير لون الزر عند الضغط -->
+            <corners android:radius="500dp"/> <!-- الزوايا المستديرة -->
+        </shape>
+    </item>
+
+    <!-- حالة الزر عند عدم الضغط -->
+    <item>
+        <shape>
+            <solid android:color="#DC71FA"/> <!-- لون الزر الافتراضي -->
+            <corners android:radius="500dp"/> <!-- الزوايا المستديرة -->
+        </shape>
+    </item>
+</selector>

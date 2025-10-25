@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0F172A"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:id="@+id/rootLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <Button
+             android:id="@+id/select"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="تحديد"
+             android:layout_marginStart="8dp"
+             android:backgroundTint="#10B981"
+             android:textColor="#FFFFFF"
+             android:paddingLeft="20dp"
+             android:paddingRight="20dp" />
+        <TextView
+            android:id="@+id/studentName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="اسم الطالب: -"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:background="#1E1E1E"
+            android:padding="14dp"
+            android:layout_marginBottom="8dp"
+            android:elevation="4dp"
+            android:backgroundTint="#1E1E1E"
+            android:backgroundTintMode="src_in" />
+
+        <TextView
+            android:id="@+id/invoiceAmount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="المبلغ: -"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:background="#1E1E1E"
+            android:padding="14dp"
+            android:layout_marginBottom="8dp"
+            android:elevation="4dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/paymentNumber"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="رقم الدفع: -"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:background="#1E1E1E"
+                android:padding="14dp"
+                android:elevation="4dp" />
+
+            <Button
+                android:id="@+id/copyPaymentNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="نسخ"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="#10B981"
+                android:textColor="#FFFFFF"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textColor="@color/white"
+            android:text="تعليمات قبول الدفع:\n\n1. اطّلع على المبلغ المطلوب سداده.\n2. اضغط على زر نسخ رقم الدفع الأخضر بالأعلى.\n3. ادفع المبلغ المطلوب بالكامل باستخدام تطبيق إنستا باي أو أنا فودافون أو أي تطبيق يوضح تاريخ المعاملة.\n4. تأكد من أن إعدادات اللغة أو المنطقة في التطبيق تعرض الأرقام بصيغة عربية (123456789) وليست بالأرقام الهندية (١٢٣٤٥٦٧٨٩)، لأننا لا نستطيع قراءة الإيصالات بهذه الصيغة.\n5. بعد الدفع، احتفظ بلقطة شاشة تؤكد المعاملة.\n6. اضغط على زر اختيار إيصال.\n7. اختر صورة الإيصال من جهازك.\n8. إذا لم تكن الصورة تحتوي على رقم الهاتف المُرسل منه المبلغ، سيتم طلب إدخاله يدويًا.\n9. إذا كانت جميع البيانات مكتملة، سيتم تأكيد الدفع تلقائيًا والانتقال إلى التطبيق، مع إرسال إشعار للمؤسسة لمراجعة المعاملة." />
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp"
+            android:weightSum="2">
+
+            <EditText
+                android:id="@+id/manualInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.3"
+                android:hint="ادخل الرقم المحول منه المبلغ"
+                android:textColorHint="#9CA3AF"
+                android:textColor="#FFFFFF"
+                android:inputType="number"
+                android:background="@drawable/rounded_input"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/confirmBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7"
+                android:text="تأكيد"
+                android:backgroundTint="#F59E0B"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/selectImageBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="اختيار إيصال"
+            android:backgroundTint="#3B82F6"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="8dp"
+            android:elevation="2dp" />
+
+
+
+
+        <TextView
+            android:id="@+id/responseTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:padding="12dp"
+            android:background="#1F2937"
+            android:layout_marginTop="12dp"
+            android:minHeight="100dp" />
+    </LinearLayout>
+</ScrollView>

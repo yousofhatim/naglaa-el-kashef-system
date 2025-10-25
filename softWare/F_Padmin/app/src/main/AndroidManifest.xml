@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+        tools:targetApi="31">
+        <activity
+            android:name=".allStudents"
+            android:exported="false" />
+        <activity
+            android:name=".addEmployee"
+            android:exported="false" />
+        <activity
+            android:name=".problems"
+            android:exported="false" /> <!-- <activity -->
+        <!-- android:name=".StudentFormActivity" -->
+        <!-- android:exported="false" /> -->
+        <activity
+            android:name=".CurrentStudents"
+            android:exported="false" />
+        <activity
+            android:name=".InvoicesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".underReviewStudens"
+            android:exported="false" />
+        <activity
+            android:name=".newQuestions"
+            android:exported="false" />
+        <activity
+            android:name=".smartManager"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".Financial"
+            android:exported="false" />
+        <activity
+            android:name=".editLevels"
+            android:exported="false" />
+        <activity
+            android:name=".addContant"
+            android:exported="false" />
+        <activity
+            android:name=".updatePeriod"
+            android:exported="false" />
+        <activity
+            android:name=".activate"
+            android:exported="false" />
+        <activity
+            android:name=".totalInClass"
+            android:exported="false" />
+        <activity
+            android:name=".report"
+            android:exported="false" />
+        <activity
+            android:name=".chickInAndOut"
+            android:exported="false" />
+        <activity
+            android:name=".subscriberData"
+            android:exported="false" />
+        <activity
+            android:name=".statuActivity"
+            android:exported="false" />
+        <activity
+            android:name=".addActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" />
+        <activity
+            android:name=".payPeriod"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

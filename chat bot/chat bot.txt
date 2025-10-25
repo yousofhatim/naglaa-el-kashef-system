@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>نجلاء الكاشف-GPT</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100dvh;
+      font-family: Arial, sans-serif;
+      background: url('https://i.pinimg.com/originals/6a/be/f6/6abef61ce92590dd27fe0867033983c9.jpg') no-repeat center center fixed;
+      background-size: cover;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      background-color: transparent;
+      z-index: 1000;
+      padding: 10px 0;
+      transition: all 0.3s ease;
+    }
+
+    .header-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .header img {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .header h1 {
+      color: white;
+      margin: 0;
+      font-size: 18px;
+      transition: all 0.3s ease;
+    }
+
+    .header.shrink .header-inner {
+      flex-direction: row;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .header.shrink img {
+      width: 25px;
+      height: 25px;
+      margin-bottom: 0;
+    }
+
+    .header.shrink h1 {
+      font-size: 14px;
+    }
+
+    .chat-box {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 10px 15px;
+      border-radius: 15px;
+      line-height: 1.5;
+      word-wrap: break-word;
+      font-size: 16px;
+    }
+
+    .user {
+      align-self: flex-end;
+      background-color: #056162;
+      color: white;
+    }
+
+    .bot {
+      align-self: flex-start;
+      background-color: #262d31;
+      color: white;
+    }
+
+    .input-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 10px;
+      background-color: #1e1e1e;
+      border-top: 1px solid #333;
+      gap: 10px;
+      width: 100%;
+      max-width: 100vw;
+    }
+
+    #user-input {
+      flex-grow: 1;
+      flex-shrink: 1;
+      min-width: 50px;
+      max-width: 100%;
+      padding: 16px 20px;
+      border: none;
+      border-radius: 20px;
+      background-color: #2a2f32;
+      color: white;
+      font-size: 16px;
+    }
+
+    .input-container button {
+      flex-shrink: 0;
+      white-space: nowrap;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 20px;
+      background-color: #056162;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .quick-question {
+      display: flex;
+      justify-content: center;
+      margin: 10px;
+    }
+
+    .quick-question button {
+      background-color: #333;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-inner">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" alt="ChatGPT">
+        <h1>نجلاء الكاشف-GPT</h1>
+      </div>
+    </div>
+
+    <div class="quick-question">
+      <button onclick="sendQuickQuestion()">اديني أمثلة عن الأسئلة اللي ممكن احتاج اعرفها منك؟</button>
+    </div>
+    <div id="chat-box" class="chat-box"></div>
+    <div class="input-container">
+      <input type="text" id="user-input" placeholder="اكتب رسالتك..." onkeydown="if(event.key==='Enter') sendMessage()">
+      <input type="file" id="image-input" accept="image/*" capture="environment" style="display: none;">
+      <button id="send-btn" onclick="sendMessage()">إرسال</button>
+      <button id="camera-btn" style="display: none;">📷 افتح الكاميرا</button>
+      <button id="confirm-btn" style="display: none;">✅ تأكيد</button>
+      <button id="retry-btn" style="display: none;">🔁 إعادة المحاولة</button>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDhdID2wAdkpl-Hc-8mWvMz83PNfAgRto8",
+      authDomain: "kid-id.firebaseapp.com",
+      databaseURL: "https://kid-id-default-rtdb.firebaseio.com",
+      projectId: "kid-id",
+      storageBucket: "kid-id.appspot.com",
+      messagingSenderId: "921217378956",
+      appId: "1:921217378956:android:6e9c8d7dedb8e05f3da9a9"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const storage = firebase.storage();
+
+    const chatBox = document.getElementById("chat-box");
+    let stage = "idle";
+    let currentUploadKey = null;
+    let openaiApiKey = null;
+
+    // تعريف mainCollection
+    const mainCollection = "1";
+
+    let applicationData = {};
+    let currentQuestionIndex = 0;
+    const questions = [
+      {key: "studentName", text: "اسم الطالب الرباعي؟"},
+      {key: "motherName", text: "اسم الأم بالكامل؟"},
+      {key: "fatherJob", text: "وظيفة الأب؟"},
+      {key: "motherJob", text: "وظيفة الأم؟"},
+      {key: "studentNID", text: "الرقم القومي للطفل من شهادة الميلاد؟"},
+      {key: "fatherNID", text: "الرقم القومي للأب؟"},
+      {key: "motherNID", text: "الرقم القومي للأم؟"},
+      {key: "motherPhone", text: "رقم هاتف الأم؟"},
+      {key: "fatherPhone", text: "رقم هاتف الأب؟"},
+      {key: "emergencyPhone", text: "رقم طوارئ احتياطي؟"},
+      {key: "location", text: "العنوان بشكل تفصيلي؟"},
+      {key: "details", text: "هل في اي تفاصيل تحب تبلغ بيها لجنة القبول اي تفاصيل تقدر تضيفها هنا؟"},
+      {key: "HowknowUs", text: "عرفتناازاي؟"},
+
+      {key: "studentPhoto", text: "تمام دلوقتي انا فعلتلك زرار للكاميرا و المطلوب تصور الطالب المتقدم في إضائة واضحه الصورة لازم تكون واضحه"},
+      {key: "parentsIDPhoto", text: "استأذنك تحط بطاقة الاب بجانب بطاقة الام  تحتهم شهادة ميلاد الطالب و تتأكد ان البيانات تكون ظاهره و تلتقط صورة واضحه"}
+    ];
+
+    function loadOpenAIKey() {
+      const apiKeyRef = db.ref(`${mainCollection}/splashActivity/mainActivity`);
+      apiKeyRef.once('value').then(snapshot => {
+        openaiApiKey = snapshot.val();
+        if (!openaiApiKey) {
+          console.error("لم يتم العثور على مفتاح OpenAI API في قاعدة البيانات");
+          appendMessage("حدث خطأ في تحميل مفتاح API. الرجاء المحاولة لاحقًا.", "bot", true);
+        }
+      }).catch(error => {
+        console.error("خطأ في تحميل مفتاح API:", error);
+        appendMessage("حدث خطأ في تحميل مفتاح API. الرجاء المحاولة لاحقًا.", "bot", true);
+      });
+    }
+
+    loadOpenAIKey();
+
+    const header = document.querySelector('.header');
+    const chatBoxDiv = document.querySelector('.chat-box');
+
+    function updateHeaderState() {
+      const distanceFromBottom = chatBoxDiv.scrollHeight - chatBoxDiv.scrollTop - chatBoxDiv.clientHeight;
+      if (distanceFromBottom > 100) {
+        header.classList.add('shrink');
+      } else {
+        header.classList.remove('shrink');
+      }
+    }
+
+    chatBoxDiv.addEventListener('scroll', updateHeaderState);
+
+    function appendMessage(text, className, typing = false) {
+      const msg = document.createElement("div");
+      msg.className = `message ${className}`;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      const htmlLinkRegex = /<a\s+href="(https?:\/\/[^"]+)"[^>]*>(.*?)<\/a>/gi;
+      text = text.replace(htmlLinkRegex, (_, url, label) => `[${label}](${url})`);
+
+      const parts = [];
+      let lastIndex = 0;
+      const linkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+      let match;
+      while ((match = linkRegex.exec(text)) !== null) {
+        if (match.index > lastIndex) {
+          parts.push({ type: "text", content: text.slice(lastIndex, match.index) });
+        }
+        parts.push({ type: "link", label: match[1], url: match[2] });
+        lastIndex = linkRegex.lastIndex;
+      }
+      if (lastIndex < text.length) {
+        parts.push({ type: "text", content: text.slice(lastIndex) });
+      }
+
+      if (typing) {
+        const tempSpan = document.createElement("span");
+        msg.appendChild(tempSpan);
+
+        let partIndex = 0;
+        let charIndex = 0;
+
+        const interval = setInterval(() => {
+          if (partIndex >= parts.length) {
+            clearInterval(interval);
+            return;
+          }
+
+          const current = parts[partIndex];
+
+          if (current.type === "text") {
+            if (charIndex < current.content.length) {
+              tempSpan.innerHTML += current.content[charIndex];
+              charIndex++;
+            } else {
+              partIndex++;
+              charIndex = 0;
+            }
+          } else if (current.type === "link") {
+            const link = document.createElement("a");
+            link.href = current.url;
+            link.target = "_blank";
+            link.style.color = "#4fc3f7";
+            link.textContent = current.label || "اضغط هنا";
+            msg.appendChild(link);
+            partIndex++;
+          }
+
+          chatBox.scrollTop = chatBox.scrollHeight;
+        }, 20);
+      } else {
+        let finalHTML = text.replace(linkRegex, '<a href="$2" target="_blank" style="color:#4fc3f7;">$1</a>');
+        msg.innerHTML = finalHTML;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }
+
+    function scrollToBottom() {
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function sendQuickQuestion() {
+      const question = "اديني أمثلة عن الأسئلة اللي ممكن احتاج اعرفها منك؟";
+      appendMessage(question, "user");
+      document.querySelector(".quick-question").style.display = "none";
+      fetchAIReply(question).then(reply => appendMessage(reply, "bot", true));
+    }
+
+    function sendMessage() {
+      const input = document.getElementById("user-input");
+      const message = input.value.trim();
+      if (!message) return;
+      appendMessage(message, "user");
+      input.value = "";
+      handleMessage(message);
+    }
+
+    let complaintStage = null;
+    let currentComplaintId = null;
+
+    function handleMessage(message) {
+      db.ref(`${mainCollection}/autoChatOn`).once("value").then(snapshot => {
+        const isActive = snapshot.val();
+        if (isActive !== true) {
+          appendMessage("ورديتي خلصت مش هرد دلوقتي", "bot", true);
+          return;
+        }
+
+        if (complaintStage === "awaitingStudentName") {
+          db.ref(`${mainCollection}/FeedbackCritical`).child(currentComplaintId).update({
+            studentName: message
+          });
+          appendMessage("يرجى كتابة رقم هاتف ولي الأمر للتواصل.", "bot", true);
+          complaintStage = "awaitingPhone";
+          return;
+        }
+
+        if (complaintStage === "awaitingPhone") {
+          db.ref(`${mainCollection}/FeedbackCritical`).child(currentComplaintId).update({
+            parentPhone: message
+          });
+          appendMessage("✅ تم تسجيل الشكوى بالكامل، وسيتم التواصل معكم قريبًا من إدارة المؤسسة.", "bot", true);
+          complaintStage = null;
+          currentComplaintId = null;
+          return;
+        }
+
+        fetchAIReply(message).then(reply => {
+          if (reply.toLowerCase().includes("تقصير::")) {
+            appendMessage("نأسف على ما حدث، وتم تصعيد الأمر إلى إدارة المؤسسة لمراجعته.", "bot", true);
+            appendMessage("يرجى كتابة اسم الطالب المتضرر.", "bot", true);
+
+            const complaintRef = db.ref(`${mainCollection}/FeedbackCritical`);
+            const now = new Date();
+            const complaintId = now.getTime();
+
+            currentComplaintId = complaintId;
+            complaintStage = "awaitingStudentName";
+
+            complaintRef.child(complaintId).set({
+              complaintMessage: message,
+              date: now.toLocaleDateString("ar-EG"),
+              time: now.toLocaleTimeString("ar-EG"),
+              status: "pending"
+            });
+
+            return;
+          }
+
+          if (reply.toLowerCase().includes("استفسار::")) {
+            appendMessage("احييك سؤالك مش عارف اجابتة و عشان كده هرجع للإدارة و اسألهم عن الموضوع ده و بإذن الله لو سألتني نفس السؤال بكره هرد عليك", "bot", true);
+
+            const newQRef = db.ref(`${mainCollection}/NewQuestions`);
+            newQRef.once("value").then(snapshot => {
+              const count = snapshot.numChildren() + 1;
+              newQRef.child(String(count)).set(message);
+            });
+
+            return;
+          }
+
+          if (reply.toLowerCase().includes("اشتراك::")) {
+            reply = reply.replace("اشتراك::", "").trim();
+            appendMessage(reply, "bot", true);
+            appendMessage(" هيكون مطلوب تجهز جنبك شهادة الميلاد و البطاقة الشخصية للاب و الام 3 ارقام للتواصل و يكون الطفل جنبك عشان هطلب منك تصورة و بكدة هتكون اشتركت بشكل رسمي في المؤسسة و في النهاية هتختار 3 ايام و بالنسبة للوقت اللي هتجيب فيه الطفل في اي وقت مناسب ليك من 9 الصبح لحد 9 بليل كل مره انت اللي بتختار الوقت اللي فاضي فيه يوميا ابنك بيكون ليه مساعد خاص من فريقنا بس خلي بالك لو اتأخرت عن وقت اغلاق المؤسسة بيتضاف علي الفاتورة جلسة استضافه 100جنية ولو اتأخرت عن استلام الطفل عموما علي مدار اليوم كل ساعه بتزود 50جنية علي الفاتورة بعد التقديم معايا هبعتلك لينك هتدوس عليه عشان تحمل التطبيق الخاص بالمؤسسة تسجيل الدخول علي التطبيق بيكون عن طريق اسم الطالب رباعي اللي هتكتبهولي و الرقم القومي بتاعه و ده اللي هيسمحلك تتابع الحضور و تحدد مكان ابنك إذا كان دخل المؤسسة ولا لسه لو كل حاجة موجودة عرفني انك مستعد ", "bot", true);
+            if (stage !== "check-docs" && stage !== "application") {
+              stage = "check-docs";
+            }
+            return;
+          }
+
+          if (reply.toLowerCase().includes("الورق::")) {
+            if (reply.toLowerCase().includes("الورق::لا")) {
+              stage = "idle";
+              appendMessage("الأوراق المطلوبة: شهادة ميلاد، الرقم القومي للأب والأم، صور شخصية للطفل، إثبات وظيفة للأب والأم، أرقام تواصل.", "bot", true);
+            } else if (reply.toLowerCase().includes("الورق::نعم")) {
+              stage = "application";
+              currentQuestionIndex = 0;
+              applicationData = {};
+              askNextQuestion();
+            }
+            return;
+          }
+
+          if (stage === "application") {
+            const q = questions[currentQuestionIndex];
+            applicationData[q.key] = message;
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+              askNextQuestion();
+            } else {
+              saveApplication();
+            }
+          } else {
+            appendMessage(reply, "bot", true);
+          }
+        });
+      });
+    }
+
+    function askNextQuestion() {
+      const q = questions[currentQuestionIndex];
+
+      if (q.key === "studentPhoto" || q.key === "parentsIDPhoto") {
+        currentUploadKey = q.key;
+        appendMessage(q.text + " (اختاري صورة بالكاميرا)", "bot", true);
+        document.getElementById("send-btn").style.display = "none";
+        document.getElementById("camera-btn").style.display = "inline-block";
+        return;
+      }
+
+      appendMessage(q.text, "bot", true);
+    }
+
+    function saveApplication() {
+      const now = new Date();
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const year = now.getFullYear();
+      const counterKey = `${year}-${month}-${day}`;
+
+      const counterRef = db.ref(`${mainCollection}/ApplicationIDCounter`).child(counterKey);
+
+      counterRef.transaction(currentValue => {
+        return (currentValue || 0) + 1;
+      }, (error, committed, snapshot) => {
+        if (error || !committed) {
+          appendMessage("حصلت مشكلة في تسجيل الطلب، حاول تاني.", "bot", true);
+          return;
+        }
+
+        const counter = snapshot.val();
+        const entryId = `${String(counter).padStart(2, '0')}-${day}-${month}-${year}`;
+        registerStudent(entryId);
+      });
+    }
+
+    function registerStudent(entryId) {
+      const submissionsRef = db.ref(`${mainCollection}/UnderReview`);
+      const usersRef = db.ref(`${mainCollection}/users`);
+
+      const studentName = applicationData.studentName || "بدون اسم";
+      const phoneMother = applicationData.motherPhone || "";
+      const phoneFather = applicationData.fatherPhone || "";
+      const phone3 = applicationData.emergencyPhone || "";
+      const fatherNID = applicationData.fatherNID || "";
+      const motherNID = applicationData.motherNID || "";
+      const studentNID = applicationData.studentNID || "";
+      const fatherJob = applicationData.fatherJob || "";
+      const motherJob = applicationData.motherJob || "";
+      const location = applicationData.location || "";
+      const details = applicationData.details || "";
+      const HowknowUs = applicationData.HowknowUs || "";
+
+      const fatherName = studentName.split(" ").slice(1).join(" ");
+
+      submissionsRef.child(entryId).set({
+        kidId: entryId,
+        kidName: studentName,
+        phoneFather: phoneFather,
+        phoneMother: phoneMother,
+        phone3: phone3,
+        NationalID: studentNID,
+        fatherNID: fatherNID,
+        motherNID: motherNID,
+        fatherJob: fatherJob,
+        motherJob: motherJob,
+        fatherName: fatherName,
+        isInClass: false,
+        location: location,
+        details: details,
+        HowknowUs: HowknowUs,
+        studentPhoto: applicationData.studentPhoto || "",
+        parentsIDPhoto: applicationData.parentsIDPhoto || "",
+      });
+
+      usersRef.child(studentNID).set({
+        id: studentNID,
+        name: studentName,
+        KidId: entryId,
+        isAccepted: false
+      });
+
+      appendMessage(
+        `🎉 طلبك تحت المراجعه من فريق القبول في مؤسسة نجلاء الكاشف 🎉
+
+      بيانات تسجيل الدخول للتطبيق:
+      👶 اسم الطفل: ${applicationData.studentName}
+      🆔 كود الطالب: ${studentNID}
+
+      📸 خد لقطة شاشة دلوقتي لأن دي البيانات اللي هتدخل بيها على التطبيق
+
+      بمجرد قبول طلب الالتحاق سيتم تفعيل حسابك على تطبيق المؤسسة، وهيتم إفاضة بصمة إصبع جديدة للطالب اللي هيدخل بيها المؤسسة
+      تقدر تسألني بكره عن حالة الطلب، ولو تم قبوله هقولك الخطوات الجاية
+
+      ⬇️ تقدر تحمل التطبيق الخاص بالمؤسسة من اللينك ده:
+      [اضغط هنا لتحميل التطبيق](https://t.me/+iU2p-U3Pin83Y2M0)
+
+      ⚠️ ممكن يوصلك تحذير وانت بتثبت التطبيق
+      ما تقلقش، ده طبيعي علشان التطبيق مش موجود على Google Play
+      اختار "تثبيت على أي حال" وهتقدر تستخدمه عادي، لو واجهتك أي مشكلة في تحميل التطبيق نورنا في أي وقت وإحنا هنساعدك`,
+        "bot",
+        true
+      );
+
+      stage = "idle";
+      applicationData = {};
+    }
+
+    async function fetchAIReply(message) {
+      try {
+        if (!openaiApiKey) {
+          await new Promise(resolve => setTimeout(resolve, 1000)); // انتظار قصير
+          if (!openaiApiKey) {
+            return "جاري تحميل مفتاح API، الرجاء المحاولة مرة أخرى...";
+          }
+        }
+
+        const promptSnapshot = await db.ref(`${mainCollection}/Prompt/apiPrompt`).once('value');
+        const systemMessage = promptSnapshot.val() || "أهلاً بيك";
+
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${openaiApiKey}`
+          },
+          body: JSON.stringify({
+            model: "gpt-4o",
+            messages: [
+              {role: "system", content: systemMessage},
+              {role: "user", content: message}
+            ]
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`خطأ في استجابة API: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.choices?.[0]?.message?.content || "معرفتش أرد دلوقتي، جرب تاني.";
+      } catch (err) {
+        console.error("Error in fetchAIReply:", err);
+        return `في مشكلة في الرد التلقائي: ${err.message}`;
+      }
+    }
+
+    // بقية الكود (إعدادات الكاميرا وغيرها) تبقى كما هي بدون تغيير
+    const cameraBtn = document.getElementById("camera-btn");
+    const imageInput = document.getElementById("image-input");
+    const confirmBtn = document.getElementById("confirm-btn");
+    const retryBtn = document.getElementById("retry-btn");
+    const sendBtn = document.getElementById("send-btn");
+
+    cameraBtn.addEventListener("click", () => {
+      imageInput.click();
+    });
+
+    imageInput.addEventListener("change", () => {
+      if (imageInput.files.length > 0) {
+        appendMessage("📸 صورة تم اختيارها (لم تتم المعالجة)", "user");
+        cameraBtn.style.display = "none";
+        confirmBtn.style.display = "inline-block";
+        retryBtn.style.display = "inline-block";
+      }
+    });
+
+    confirmBtn.addEventListener("click", () => {
+      const file = imageInput.files[0];
+      if (!file || !currentUploadKey) {
+        appendMessage("❌ مفيش صورة أو مفيش مفتاح مرتبط بالصورة", "bot");
+        return;
+      }
+
+      const now = new Date();
+      const timestamp = now.getTime();
+      const storageRef = storage.ref(`studentForms/${currentUploadKey}_${timestamp}.jpg`);
+
+      const uploadTask = storageRef.put(file);
+
+      uploadTask.on('state_changed',
+        null,
+        (error) => {
+          appendMessage("❌ فشل في رفع الصورة، جربي تاني", "bot");
+          console.error(error);
+        },
+        () => {
+          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+            applicationData[currentUploadKey] = downloadURL;
+
+            appendMessage("✅ الصورة اترفعت بنجاح", "bot");
+
+            confirmBtn.style.display = "none";
+            retryBtn.style.display = "none";
+            sendBtn.style.display = "inline-block";
+            currentUploadKey = null;
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length) {
+              askNextQuestion();
+            } else {
+              saveApplication();
+            }
+          });
+        }
+      );
+    });
+
+    retryBtn.addEventListener("click", () => {
+      appendMessage("🔁 اختاري صورة من جديد", "bot");
+      imageInput.click();
+    });
+
+    const originalAppendMessage = appendMessage;
+    appendMessage = function(text, className, typing = false) {
+      originalAppendMessage(text, className, typing);
+      if (className === "bot" && text.toLowerCase().includes("قرأت")) {
+        sendBtn.style.display = "none";
+        cameraBtn.style.display = "inline-block";
+      }
+    }
+
+    // إضافة رسالة ترحيبية عند التحميل
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        appendMessage("مرحباً! أنا الاداره الذكيه في مؤسسة نجلاء الكاشف، كيف يمكنني مساعدتك اليوم؟", "bot", true);
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
+
